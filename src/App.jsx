@@ -255,6 +255,53 @@ function Impressum() {
   );
 }
 
+// --- DATENSCHUTZ SEITE ---
+function Datenschutz() {
+  return (
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-white selection:text-black p-8 md:p-24">
+      <Link to="/" className="inline-flex items-center text-neutral-500 hover:text-white transition-colors mb-12 font-mono text-sm uppercase tracking-widest">
+        ← Zurück zur Startseite
+      </Link>
+      
+      <div className="max-w-3xl space-y-12">
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tighter">Datenschutz</h1>
+        
+        <div className="space-y-6 text-neutral-400 leading-relaxed">
+          <section>
+            <h2 className="text-white text-xl font-bold mb-2">1. Datenschutz auf einen Blick</h2>
+            <p>
+              **Allgemeine Hinweise:** Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie diese Website besuchen.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-white text-xl font-bold mb-2">2. Hosting und Content Delivery Networks (CDN)</h2>
+            <p className="mb-4">
+              **Externes Hosting durch Vercel:** <br/>
+              Diese Website wird bei dem externen Dienstleister Vercel Inc. gehostet. Die personenbezogenen Daten, die auf dieser Website erfasst werden, werden auf den Servern des Hosters gespeichert. Hierbei kann es sich um IP-Adressen und Webseitenzugriffe handeln.
+            </p>
+            <p>
+              **Bunny.net (CDN für Videos):** <br/>
+              Auf unserer Website nutzen wir das Content Delivery Network (CDN) von BunnyWay d.o.o. (Bunny.net) zum Abspielen von Videos. Wenn Sie die Seite aufrufen, wird eine Verbindung zu den Servern von Bunny.net hergestellt, um die Videodateien zu laden. Dabei wird Ihre IP-Adresse an Bunny.net übermittelt (Art. 6 Abs. 1 lit. f DSGVO).
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-white text-xl font-bold mb-2">3. Allgemeine Hinweise</h2>
+            <p>
+              **Verantwortliche Stelle:** <br/>
+              Lennart Koitka <br/>
+              Merheimer Straße 49a <br/>
+              50733 Köln <br/>
+              E-Mail: lennart.koitka@gmx.de
+            </p>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // --- HAUPT INHALT (Portfolio) ---
 
 function PortfolioContent() {
@@ -431,6 +478,8 @@ function PortfolioContent() {
               <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="text-xs font-mono uppercase tracking-widest hover:text-white text-neutral-500 transition-colors">LinkedIn</a>
               <a href={SOCIAL_LINKS.email} className="text-xs font-mono uppercase tracking-widest hover:text-white text-neutral-500 transition-colors">Email</a>
               <Link to="/impressum" className="text-xs font-mono uppercase tracking-widest hover:text-white text-neutral-500 transition-colors">Impressum</Link>
+              <Link to="/impressum" className="text-xs font-mono uppercase tracking-widest hover:text-white text-neutral-500 transition-colors">Impressum</Link>
+              <Link to="/datenschutz" className="text-xs font-mono uppercase tracking-widest hover:text-white text-neutral-500 transition-colors">Datenschutz</Link>
           </div>
         </footer>
       
@@ -449,6 +498,7 @@ export default function App() {
         <Route path="/" element={<PortfolioContent />} />
         <Route path="/:company" element={<PortfolioContent />} />
         <Route path="/impressum" element={<Impressum />} />
+        <Route path="/datenschutz" element={<Datenschutz />} />
       </Routes>
     </BrowserRouter>
   );
