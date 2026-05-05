@@ -149,7 +149,7 @@ const COMPANY_CONFIG = {
 
 // --- 4. VIDEO KONFIGURATION ---
 const VIDEO_CONFIG = {
-  default: "https://lennart-portfolio.b-cdn.net/Lennart%20Showreel.mp4",
+  default: "https://lennart-portfolio.b-cdn.net/Showreel%20Lennart_V2.mp4",
 };
 
 // --- 5. PROJEKTE ---
