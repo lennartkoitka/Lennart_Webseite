@@ -2,152 +2,193 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ArrowDownRight, ArrowDown, Plus, Minus, Volume2, VolumeX, Building2 } from 'lucide-react';
 import { BrowserRouter, Routes, Route, useParams, Link } from 'react-router-dom';
 
-// --- 1. DEINE SOCIAL MEDIA LINKS (HIER EINTRAGEN) ---
+// --- 1. DEINE SOCIAL MEDIA LINKS ---
 const SOCIAL_LINKS = {
-  email: "mailto:kontakt@lennartkoitka.de", // Deine E-Mail Adresse
-  instagram: "https://instagram.com/lennart.koitka", // Dein Instagram Link
-  linkedin: "https://linkedin.com/in/lennart-koitka-a28468191", // Dein LinkedIn Link
+  email: "mailto:lennart.koitka@gmx.de",
+  instagram: "https://instagram.com/lennart.koitka",
+  linkedin: "https://linkedin.com/in/lennart-koitka-a28468191",
 };
 
-// --- 2. BEWERBUNGS-KONFIGURATION ---
-const COMPANY_CONFIG = {
-  default: {
-    greeting: null,
-    subGreeting: null,
-    logoUrl: null,
-    blocks: [],
-    expandablesTitle: null,
-    expandables: [],
-    portfolioTransitionText: null
+// --- 2. ÜBERSETZUNGS-LEXIKON (Allgemeine Texte) ---
+const TRANSLATIONS = {
+  de: {
+    clickToEnter: "Wähle deine Sprache zum Starten",
+    roleLabel: "Rolle",
+    roleName: "DOP & Editor",
+    applicationTag: " // BEWERBUNG",
+    aboutTitle: "About",
+    aboutHeadline: <>Kameramann & Cutter <br/><span className="text-neutral-500">aus Köln.</span></>,
+    aboutText1: <>Nach meiner Ausbildung als Mediengestalter Bild und Ton bei <strong>Picture Puzzle Medien</strong> (2021–2023) arbeite ich heute festangestellt an der Kamera und in der Postproduktion für diverse TV-Formate.</>,
+    aboutText2: <>Mein Fokus liegt auf der technischen Umsetzung und visuellen Gestaltung von Doku-Soaps, Magazinbeiträgen und Werbung für Sender wie <strong>RTL2, Discovery+, Kabel Eins, ARD, VOX und RTL+</strong>. Dabei übernehme ich Verantwortung von der technischen Planung über den Dreh bis zum finalen Schnitt.</>,
+    imprint: "Impressum",
+    privacy: "Datenschutz",
+    backHome: "← Zurück zur Startseite",
+    insertImage: "[ BILD EINFÜGEN ]"
   },
-  klangmalereitv: {
-    // 1. Die große Überschrift
-    greeting: "Hi liebes Klangmalerei Team!",
-    // 2. Die zweite, mittige Textzeile darunter
-    subGreeting: "Ich bin Lennart, Kameramann & Cutter aus Köln\nund ich glaube, wir passen perfekt zusammen.",
-    // 3. Das Firmenlogo
-    logoUrl: "https://lennart-portfolio.b-cdn.net/Klangmalerei.tv%20Logo.png",  
-    
-    // 4. Der Text für den Übergang zum Portfolio
-    portfolioTransitionText: "Im Folgenden findet ihr einige Auszüge meiner bisherigen Projekte",
-
-    // 5. Die abwechselnden Bild-Text Blöcke
-    blocks: [
-      {
-        text: "Über DWDL habe ich gelesen, dass ihr musik- und reisebegeisterte Unterstützung sucht. Daher möchte ich mich euch gern vorstellen.",
-        imageUrl: "https://lennart-portfolio.b-cdn.net/Lennart%20Foto%20Kamera.jpeg"
-      },
-      {
-        text: "Als gelernter Mediengestalter arbeite ich aktuell festangestellt bei Picture Puzzle Medien sowohl an der Kamera als auch in der Postproduktion für verschiedene TV-Formate.\n\n Als DoP liegt mein Fokus auf der technischen Umsetzung und visuellen Gestaltung von Doku(-Soaps), Reportagen, Magazinbeiträgen und Werbeformaten. In enger Zusammenarbeit mit den Kund:innen begleite ich Projekte von der ersten Idee über den Dreh bis hin zum finalen Schnitt, für private und öffentlich-rechtliche Sender sowie Streaminganbieter.",
-        imageUrl: "https://lennart-portfolio.b-cdn.net/WhatsApp%20Image%202025-10-13%20at%2016.18.10.jpeg"
-      },
-      {
-        text: "Meine Kameraerfahrung reicht von der Arbeit mit einer Spiegelreflex bis hin zum Umgang mit der kompletten Sony-FX-Reihe. Zudem arbeite ich seit Jahren mit der gesamten Adobe Creative Cloud. Am Set-Alltag schätze ich besonders, dass nichts wirklich alltäglich ist. \n\nEs reizt mich spannende Einblicke in unterschiedliche Lebensweisen zu bekommen; umso schöner, wenn mich diese an neue Orte führen. Durch verschiedenste Produktionen und meine private Ungebundenheit konnte ich umfangreiche Auslandserfahrung sammeln.",
-        imageUrl: "https://lennart-portfolio.b-cdn.net/WhatsApp%20Image%202025-10-13%20at%2016.18.10%20(2).jpeg"
-      },
-      {
-        text: "In der Postproduktion ist die Entwicklung eines stimmungsvollen Musikkonzepts für mich der Moment, in dem ich dem Film seinen entscheidenden Schliff geben kann. \n\nAber auch abseits der Arbeit spielt Musik für mich eine große Rolle: Seit meinem 17. Lebensjahr besuche ich regelmäßig Konzerte und Events. Für elektronische Sets nehme ich auch gerne längere Wege auf mich, um Künstler wie XY, ZZ oder YY live zu erleben.",
-        imageUrl: "https://lennart-portfolio.b-cdn.net/WhatsApp%20Image%202026-05-04%20at%2020.35.33.jpeg"
-      },
-      {
-        text: "Ich habe Bock, meine Leidenschaft für Musik und Reisen in eurem Team mit meiner Berufung zu verbinden. \n\nMeldet euch gern bei mir – vielleicht können wir schon bald gemeinsam tolle Momente erleben und ein „Ich bin hautnah dabei“-Gefühl für das Publikum kreieren.",
-        imageUrl: "https://lennart-portfolio.b-cdn.net/WhatsApp%20Image%202026-05-04%20at%2020.36.00.jpeg"
-      }
-    ],
-
-    // 6. Ausklappbare Textboxen (FAQ, Hard Facts, etc.)
-    expandablesTitle: "Gut zu wissen",
-    expandables: [
-      {
-        title: "Frühester Eintrittstermin",
-        content: "Ich stehe euch ab dem 01. Juli 2026 zur Verfügung."
-      },
-      {
-        title: "Gehaltsvorstellung",
-        content: "Meine Gehaltsvorstellung liegt bei 54.000 Euro brutto im Jahr. Ich bin jedoch offen für ein persönliches Gespräch, um die genauen Rahmenbedingungen zu besprechen."
-      },
-      {
-        title: "Reisebereitschaft",
-        content: "Durch regelmäßige Fernreisen (z. B. Nepal, Mongolei, China, Thailand, Australien) bin ich längere Auslandsaufenthalte gewohnt und jederzeit bereit, Projekte weltweit über mehrere Wochen zu begleiten."
-      }
-    ]
+  en: {
+    clickToEnter: "Select language to enter",
+    roleLabel: "Role",
+    roleName: "DOP & Editor",
+    applicationTag: " // APPLICATION",
+    aboutTitle: "About",
+    aboutHeadline: <>Cinematographer & Editor <br/><span className="text-neutral-500">from Cologne.</span></>,
+    aboutText1: <>After completing my training as an audiovisual media designer at <strong>Picture Puzzle Medien</strong> (2021–2023), I currently work full-time as a camera operator and in post-production for various TV formats.</>,
+    aboutText2: <>My focus lies on the technical execution and visual design of docu-soaps, magazine segments, and commercials for networks like <strong>RTL2, Discovery+, Kabel Eins, ARD, VOX, and RTL+</strong>. I take responsibility from technical planning and shooting to the final edit.</>,
+    imprint: "Imprint",
+    privacy: "Privacy Policy",
+    backHome: "← Back to Home",
+    insertImage: "[ INSERT IMAGE ]"
   }
 };
 
-// --- 3. VIDEO KONFIGURATION (Hintergrund-Videos) ---
+// --- 3. BEWERBUNGS-KONFIGURATION ---
+const COMPANY_CONFIG = {
+  default: {
+    de: { greeting: null, subGreeting: null, logoUrl: null, blocks: [], expandablesTitle: null, expandables: [], portfolioTransitionText: null },
+    en: { greeting: null, subGreeting: null, logoUrl: null, blocks: [], expandablesTitle: null, expandables: [], portfolioTransitionText: null }
+  },
+  klangmalereitv: {
+    // ---- DEUTSCHE VERSION ----
+    de: {
+      greeting: "Hi liebes Klangmalerei Team!",
+      subGreeting: "Ich bin Lennart, Kameramann & Cutter aus Köln\nund ich glaube, wir passen perfekt zusammen.",
+      logoUrl: "https://lennart-portfolio.b-cdn.net/Klangmalerei.tv%20Logo.png",  
+      portfolioTransitionText: "Im Folgenden findet ihr einige Auszüge meiner bisherigen Projekte",
+      blocks: [
+        {
+          text: "Über DWDL habe ich gelesen, dass ihr musik- und reisebegeisterte Unterstützung sucht. Daher möchte ich mich euch gern vorstellen.",
+          imageUrl: "https://lennart-portfolio.b-cdn.net/Lennart%20Foto%20Kamera.jpeg"
+        },
+        {
+          text: "Als gelernter Mediengestalter arbeite ich aktuell festangestellt bei Picture Puzzle Medien sowohl an der Kamera als auch in der Postproduktion für verschiedene TV-Formate.\n\n Als DoP liegt mein Fokus auf der technischen Umsetzung und visuellen Gestaltung von Doku(-Soaps), Reportagen, Magazinbeiträgen und Werbeformaten. In enger Zusammenarbeit mit den Kund:innen begleite ich Projekte von der ersten Idee über den Dreh bis hin zum finalen Schnitt, für private und öffentlich-rechtliche Sender sowie Streaminganbieter.",
+          imageUrl: "https://lennart-portfolio.b-cdn.net/WhatsApp%20Image%202025-10-13%20at%2016.18.10.jpeg"
+        },
+        {
+          text: "Meine Kameraerfahrung reicht von der Arbeit mit einer Spiegelreflex bis hin zum Umgang mit der kompletten Sony-FX-Reihe. Zudem arbeite ich seit Jahren mit der gesamten Adobe Creative Cloud. Am Set-Alltag schätze ich besonders, dass nichts wirklich alltäglich ist. \n\nEs reizt mich spannende Einblicke in unterschiedliche Lebensweisen zu bekommen; umso schöner, wenn mich diese an neue Orte führen. Durch verschiedenste Produktionen und meine private Ungebundenheit konnte ich umfangreiche Auslandserfahrung sammeln.",
+          imageUrl: "https://lennart-portfolio.b-cdn.net/WhatsApp%20Image%202025-10-13%20at%2016.18.10%20(2).jpeg"
+        },
+        {
+          text: "In der Postproduktion ist die Entwicklung eines stimmungsvollen Musikkonzepts für mich der Moment, in dem ich dem Film seinen entscheidenden Schliff geben kann. \n\nAber auch abseits der Arbeit spielt Musik für mich eine große Rolle: Seit meiner Jugend besuche ich regelmäßig Konzerte und Events.",
+          imageUrl: "https://lennart-portfolio.b-cdn.net/WhatsApp%20Image%202026-05-04%20at%2020.35.33.jpeg"
+        },
+        {
+          text: "Ich habe Bock, meine Leidenschaft für Musik und Reisen in eurem Team mit meiner Berufung zu verbinden.\n\nMeldet euch gern bei mir – vielleicht können wir schon bald gemeinsam tolle Momente erleben und ein „Ich bin hautnah dabei“-Gefühl für das Publikum kreieren.",
+          imageUrl: "https://lennart-portfolio.b-cdn.net/WhatsApp%20Image%202026-05-04%20at%2020.36.00.jpeg"
+        }
+      ],
+      expandablesTitle: "Gut zu wissen",
+      expandables: [
+        { title: "Frühester Eintrittstermin", content: "Ich stehe euch ab dem 01. Juli 2026 zur Verfügung." },
+        { title: "Gehaltsvorstellung", content: "Meine Gehaltsvorstellung liegt bei 54.000 Euro brutto im Jahr. Ich bin jedoch offen für ein persönliches Gespräch, um die genauen Rahmenbedingungen zu besprechen." },
+        { title: "Reisebereitschaft", content: "Durch regelmäßige Fernreisen (z. B. Nepal, Mongolei, China, Thailand, Australien) bin ich längere Auslandsaufenthalte gewohnt und jederzeit bereit, Projekte weltweit über mehrere Wochen zu begleiten." }
+      ]
+    },
+    
+    // ---- ENGLISCHE VERSION ----
+    en: {
+      greeting: "Hi Klangmalerei Team!",
+      subGreeting: "I am Lennart,\n Cinematographer & Editor from Cologne\nand I believe we are a perfect match.",
+      logoUrl: "https://lennart-portfolio.b-cdn.net/Klangmalerei.tv%20Logo.png",  
+      portfolioTransitionText: "Below you will find some excerpts of my previous projects",
+      blocks: [
+        {
+          text: "I read on DWDL that you are looking for music- and travel-enthusiastic support. That is why I would love to introduce myself to you.",
+          imageUrl: "https://lennart-portfolio.b-cdn.net/Lennart%20Foto%20Kamera.jpeg"
+        },
+        {
+          text: "As a trained media designer, I currently work full-time at Picture Puzzle Medien, both on camera and in post-production for various TV formats.\n\nAs a DoP, my focus lies on the technical execution and visual design of docu(-soaps), reports, magazine segments, and commercials. Working closely with clients, I oversee projects from the initial idea through the shoot to the final edit, for private and public broadcasters as well as streaming providers.",
+          imageUrl: "https://lennart-portfolio.b-cdn.net/WhatsApp%20Image%202025-10-13%20at%2016.18.10.jpeg"
+        },
+        {
+          text: "My camera experience ranges from working with DSLRs to handling the entire Sony FX lineup. Additionally, I have been working with the complete Adobe Creative Cloud for years. What I appreciate most about everyday life on set is that nothing is ever truly everyday.\n\nI am driven by gaining exciting insights into different ways of life; all the better when this takes me to new places. Through a wide variety of productions and my personal flexibility, I have been able to gain extensive international experience.",
+          imageUrl: "https://lennart-portfolio.b-cdn.net/WhatsApp%20Image%202025-10-13%20at%2016.18.10%20(2).jpeg"
+        },
+        {
+          text: "In post-production, developing an atmospheric music concept is the moment for me when I can give the film its final, defining touch.\n\nBut even outside of work, music plays a huge role for me: Since my youth, I have regularly attended concerts and events.",
+          imageUrl: "https://lennart-portfolio.b-cdn.net/WhatsApp%20Image%202026-05-04%20at%2020.35.33.jpeg"
+        },
+        {
+          text: "I am really excited to combine my passion for music and travel with my profession as part of your team.\n\nFeel free to reach out – perhaps we can soon experience great moments together and create an 'up close and personal' feeling for the audience.",
+          imageUrl: "https://lennart-portfolio.b-cdn.net/WhatsApp%20Image%202026-05-04%20at%2020.36.00.jpeg"
+        }
+      ],
+      expandablesTitle: "Good to know",
+      expandables: [
+        { title: "Earliest starting date", content: "I will be available from July 1st, 2026." },
+        { title: "Salary expectation", content: "My salary expectation is 54.000€ gross per year. However, I am open to a personal meeting to discuss the exact terms and conditions." },
+        { title: "Willingness to travel", content: "Through regular long-distance travel (e.g. Nepal, Mongolia, China, Thailand, Australia)\n I am accustomed to longer stays abroad and am always ready to accompany projects worldwide for several weeks." }
+      ]
+    }
+  }
+};
+
+// --- 4. VIDEO KONFIGURATION ---
 const VIDEO_CONFIG = {
   default: "https://lennart-portfolio.b-cdn.net/Lennart%20Showreel.mp4",
 };
 
-// --- 4. PROJEKTE ---
+// --- 5. PROJEKTE ---
 const PROJECTS_DATA = [
   { 
     title: "Martin Brambach - Kurzfilm", 
     category: "Commercial", 
-    role: "Kamera & Schnitt", 
+    role_de: "Kamera & Schnitt", role_en: "Camera & Edit",
     year: "2025",
     videoUrl: "https://lennart-portfolio.b-cdn.net/Volkssolidarit%C3%A4t_Dresden_Final.mp4"
   },
   { 
     title: "Diese Büchners", 
     category: "RTL 2", 
-    role: "Kamera & Schnitt", 
+    role_de: "Kamera & Schnitt", role_en: "Camera & Edit",
     year: "2024–2025",
     videoUrl: "https://lennart-portfolio.b-cdn.net/Diese%20B%C3%BCchners%20-%20Familientrubel%20unter%20Palmen%20Trailer%20(1080p_25fps_H264-128kbit_AAC).mp4"
   },
   { 
-    title: "Alles im Loth! - Die Kader und Isi Story", 
+    title: "Alles im Loth!", 
     category: "RTL 2", 
-    role: "Kamera & Schnitt", 
+    role_de: "Kamera & Schnitt", role_en: "Camera & Edit",
     year: "2025",
     videoUrl: "https://lennart-portfolio.b-cdn.net/Alles%20im%20Loth!%20Die%20Kader%20und%20Isi%20Story%20Trailer%20(1080p_25fps_H264-128kbit_AAC).mp4"
   },
   { 
-    title: "My Big Fat Italian Wedding - Nathalie und Cosimo heiraten", 
+    title: "My Big Fat Italian Wedding", 
     category: "RTL 2", 
-    role: "Kamera & Schnitt", 
+    role_de: "Kamera & Schnitt", role_en: "Camera & Edit",
     year: "2025",
     videoUrl: "https://lennart-portfolio.b-cdn.net/My%20Big%20Fat%20Italian%20Wedding%20-%20Nathalie%20%26%20Cosimo%20heiraten!%20Trailer%20(1080p_25fps_H264-128kbit_AAC).mp4"
   },
   { 
-    title: "Peter & Alex - Über den Tellerrand", 
-    category: "unreleased", 
-    role: "Kamera & Schnitt", 
-    year: "unreleased",
-    videoUrl: "https://lennart-portfolio.b-cdn.net/Trailer_Peter%26Alex__Finalv3.mp4"
-  },
-  { 
     title: "Filip & Serkan at Work", 
     category: "Discovery Plus", 
-    role: "Kamera & Schnitt", 
+    role_de: "Kamera & Schnitt", role_en: "Camera & Edit",
     year: "2023",
     videoUrl: "https://lennart-portfolio.b-cdn.net/Filip%20und%20Serkan%20%40Work%20-%20Praktikum%20statt%20Party%20Trailer(1080p_25fps_H264-128kbit_AAC).mp4"
   },
   { 
     title: "Katzenberger At Work", 
     category: "Discovery Plus", 
-    role: "Kamera & Schnitt", 
+    role_de: "Kamera & Schnitt", role_en: "Camera & Edit",
     year: "2022",
     videoUrl: "https://lennart-portfolio.b-cdn.net/Kkatzenberger%20%40%20Work%20Trailer.mp4"
   },
   { 
     title: "Wo die Liebe hinfällt", 
     category: "VOX", 
-    role: "Kamera & Schnitt", 
+    role_de: "Kamera & Schnitt", role_en: "Camera & Edit",
     year: "2021–Heute",
     videoUrl: "https://lennart-portfolio.b-cdn.net/WDLH%20Showreel%20Lennart.mp4"
   },
   { 
     title: "Goodbye Deutschland", 
     category: "VOX", 
-    role: "Kamera & Schnitt", 
+    role_de: "Kamera & Schnitt", role_en: "Camera & Edit",
     year: "2021–Heute",
     videoUrl: "https://lennart-portfolio.b-cdn.net/GBD%20Showreel%20Lennart.mp4"
   },
   { 
     title: "Achtung Kontrolle", 
     category: "Kabel 1", 
-    role: "Kamera & Schnitt", 
+    role_de: "Kamera & Schnitt", role_en: "Camera & Edit",
     year: "2021–Heute",
     videoUrl: "https://lennart-portfolio.b-cdn.net/AK%20Showreel%20Lennart.mp4"
   }
@@ -207,19 +248,12 @@ const Reveal = ({ children, delay = 0, className = "" }) => {
   );
 };
 
-// --- NEU: AUSKLAPPBARES TEXT-ITEM (Akkordeon) ---
+// --- AUSKLAPPBARES TEXT-ITEM (Akkordeon) ---
 const ExpandableItem = ({ title, content, isOpen, onClick }) => {
   const itemRef = useRef(null);
-
-  // Das automatische Scrollen wurde hier absichtlich entfernt,
-  // damit die Sektion fest stehen bleibt und nicht "nach unten rutscht".
-
   return (
     <div ref={itemRef} className="border-t border-white/20">
-      <div 
-        onClick={onClick}
-        className="group relative py-6 md:py-8 cursor-pointer overflow-hidden flex justify-between items-center transition-colors duration-500 hover:bg-white/5 px-4"
-      >
+      <div onClick={onClick} className="group relative py-6 md:py-8 cursor-pointer overflow-hidden flex justify-between items-center transition-colors duration-500 hover:bg-white/5 px-4">
         <h3 className={`text-xl md:text-3xl font-bold tracking-tight transition-all duration-500 pr-8 ${isOpen ? 'text-white' : 'text-neutral-400 group-hover:text-white'}`}>
           {title}
         </h3>
@@ -227,7 +261,6 @@ const ExpandableItem = ({ title, content, isOpen, onClick }) => {
            {isOpen ? <Minus size={20} /> : <Plus size={20} />}
         </div>
       </div>
-
       <div className={`overflow-hidden transition-all duration-700 ease-in-out ${isOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="px-4 pb-12 pt-4">
             <p className="text-lg md:text-xl lg:text-2xl text-neutral-300 font-light leading-relaxed whitespace-pre-line max-w-4xl">
@@ -266,15 +299,10 @@ const ProjectItem = ({ title, category, role, year, videoUrl, isOpen, onClick, f
 
   return (
     <div ref={itemRef} className="border-t border-white/20">
-      <div 
-        onClick={onClick}
-        className="group relative py-8 md:py-12 cursor-pointer overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-end px-4 md:px-12 transition-all duration-500 ease-out hover:scale-[1.02] origin-center"
-      >
+      <div onClick={onClick} className="group relative py-8 md:py-12 cursor-pointer overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-end px-4 md:px-12 transition-all duration-500 ease-out hover:scale-[1.02] origin-center">
         <div className="mb-4 md:mb-0 pointer-events-none relative z-10">
           <div className="flex items-center gap-4 text-xs md:text-sm font-mono text-neutral-500 mb-2 uppercase tracking-widest group-hover:text-neutral-300 transition-colors">
-            <span>{year}</span>
-            <span>/</span>
-            <span>{category}</span>
+            <span>{year}</span><span>/</span><span>{category}</span>
           </div>
           <h3 className={`text-4xl md:text-7xl font-bold uppercase tracking-tighter transition-all duration-500 ${isOpen ? 'text-white' : 'text-neutral-400 group-hover:text-white'}`}>
             {title}
@@ -292,14 +320,7 @@ const ProjectItem = ({ title, category, role, year, videoUrl, isOpen, onClick, f
         <div className="px-4 md:px-12 pb-12">
             <div className="mx-auto w-full md:w-auto max-w-full aspect-video md:h-[calc(100vh-14rem)] bg-neutral-900 rounded-lg overflow-hidden relative shadow-2xl group/video">
                 {isOpen && (
-                    <video 
-                        className="w-full h-full object-cover"
-                        src={videoUrl}
-                        autoPlay 
-                        muted={isMuted}
-                        loop 
-                        playsInline
-                    />
+                    <video className="w-full h-full object-cover" src={videoUrl} autoPlay muted={isMuted} loop playsInline />
                 )}
                 {isOpen && (
                   <button onClick={toggleMute} className="absolute bottom-6 right-6 z-20 bg-black/40 hover:bg-white text-white hover:text-black p-4 rounded-full backdrop-blur-md transition-all duration-300 border border-white/10">
@@ -315,11 +336,12 @@ const ProjectItem = ({ title, category, role, year, videoUrl, isOpen, onClick, f
 };
 
 // --- IMPRESSUM SEITE ---
-function Impressum() {
+function Impressum({ lang }) {
+  const t = TRANSLATIONS[lang];
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-white selection:text-black p-8 md:p-24">
       <Link to="/" className="inline-flex items-center text-neutral-500 hover:text-white transition-colors mb-12 font-mono text-sm uppercase tracking-widest">
-        ← Zurück zur Startseite
+        {t.backHome}
       </Link>
       
       <div className="max-w-2xl space-y-12">
@@ -345,11 +367,12 @@ function Impressum() {
 }
 
 // --- DATENSCHUTZ SEITE ---
-function Datenschutz() {
+function Datenschutz({ lang }) {
+  const t = TRANSLATIONS[lang];
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-white selection:text-black p-8 md:p-24">
       <Link to="/" className="inline-flex items-center text-neutral-500 hover:text-white transition-colors mb-12 font-mono text-sm uppercase tracking-widest">
-        ← Zurück zur Startseite
+        {t.backHome}
       </Link>
       
       <div className="max-w-3xl space-y-12">
@@ -375,23 +398,23 @@ function Datenschutz() {
 }
 
 // --- HAUPT INHALT (Portfolio) ---
-
-function PortfolioContent() {
+function PortfolioContent({ lang, setLang }) {
   const { company } = useParams();
   const [hasStarted, setHasStarted] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
   
-  // State für Portfolio-Videos
   const [openProjects, setOpenProjects] = useState([]);
   const [lastOpenedIndex, setLastOpenedIndex] = useState(null);
-
-  // State für die Ausklappbaren Texte
   const [openExpandables, setOpenExpandables] = useState([]);
 
   const companyKey = company ? company.toLowerCase() : 'default';
-  const currentCompanyData = COMPANY_CONFIG[companyKey] || COMPANY_CONFIG.default;
+  
+  // Wähle die Sprache (de oder en) aus der Konfiguration
+  const currentCompanyData = COMPANY_CONFIG[companyKey]?.[lang] || COMPANY_CONFIG.default[lang];
   const currentVideoUrl = VIDEO_CONFIG.default; 
   const isApplicationPage = !!company && !!COMPANY_CONFIG[companyKey]; 
+  
+  const t = TRANSLATIONS[lang];
 
   useEffect(() => {
     const updateTime = () => {
@@ -403,7 +426,7 @@ function PortfolioContent() {
     return () => clearInterval(timer);
   }, []);
 
-  // --- ELEGANTES SCROLL-SYSTEM ---
+  // --- ELEGANTES SCROLL-SYSTEM (Nur Desktop) ---
   useEffect(() => {
     if (!isApplicationPage) return;
 
@@ -456,7 +479,10 @@ function PortfolioContent() {
     return () => window.removeEventListener('wheel', handleWheel);
   }, [isApplicationPage]);
 
-  const handleStart = () => setHasStarted(true);
+  const handleStartWithLang = (selectedLang) => {
+    setLang(selectedLang);
+    setHasStarted(true);
+  };
   
   const toggleProject = (index) => {
       setOpenProjects(prev => {
@@ -473,19 +499,24 @@ function PortfolioContent() {
     });
   };
 
-  const greeting = company ? ` // BEWERBUNG` : "";
-
   return (
     <div className={`min-h-screen bg-black text-white font-sans selection:bg-white selection:text-black ${!hasStarted ? 'overflow-hidden h-[100dvh]' : 'overflow-x-hidden'}`}>
       
+      {isApplicationPage && (
+        <style>{`
+          @media (min-width: 1024px) {
+            html { scroll-snap-type: y mandatory; }
+          }
+        `}</style>
+      )}
+
       {/* Intro Overlay */}
       <div 
-        onClick={!hasStarted ? handleStart : undefined}
         className={`fixed z-[60] transition-all duration-[1500ms] cubic-bezier(0.16, 1, 0.3, 1) flex flex-col items-center justify-center w-full h-full
-          ${hasStarted ? '-translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100 bg-black cursor-pointer'}
+          ${hasStarted ? '-translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100 bg-black'}
         `}
       >
-        <div className="flex flex-col items-center gap-8 hover:scale-105 transition-transform duration-700">
+        <div className="flex flex-col items-center gap-12 transition-transform duration-700">
             {isApplicationPage && currentCompanyData.logoUrl ? (
                 <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10">
                     <h1 className="font-black uppercase tracking-tighter leading-[0.9] text-center text-5xl md:text-[8vw]">Lennart</h1>
@@ -499,20 +530,61 @@ function PortfolioContent() {
                     <span>Lennart</span><span>Koitka</span>
                 </h1>
             )}
-            {!hasStarted && <div className="text-xs font-mono uppercase tracking-widest text-neutral-500 animate-pulse mt-12">[ Click to Enter ]</div>}
+            
+            {/* NEU: Auffällige Sprachauswahl zum Eintreten */}
+            {!hasStarted && (
+              <div className="flex flex-col items-center gap-6 mt-8 animate-pulse">
+                <span className="text-xs font-mono uppercase tracking-widest text-neutral-500">
+                  {t.clickToEnter}
+                </span>
+                <div className="flex gap-4">
+                  <button 
+                    onClick={() => handleStartWithLang('de')} 
+                    className="px-8 py-3 border border-white/30 rounded-full font-mono text-sm tracking-widest hover:bg-white hover:text-black hover:border-white transition-all duration-300"
+                  >
+                    DEUTSCH
+                  </button>
+                  <button 
+                    onClick={() => handleStartWithLang('en')} 
+                    className="px-8 py-3 border border-white/30 rounded-full font-mono text-sm tracking-widest hover:bg-white hover:text-black hover:border-white transition-all duration-300"
+                  >
+                    ENGLISH
+                  </button>
+                </div>
+              </div>
+            )}
         </div>
       </div>
 
       <nav className={`fixed top-0 w-full z-50 px-4 md:px-8 py-6 flex justify-between items-start mix-blend-difference text-white transition-opacity duration-1000 delay-500 ${hasStarted ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         <div className="flex flex-col text-left">
-           <div className="text-xs font-mono uppercase tracking-widest mb-1">Cologne, GER</div>
+           <div className="text-xs font-mono uppercase tracking-widest mb-1">{t.city || "Cologne, GER"}</div>
            <div className="text-xs font-mono uppercase tracking-widest text-neutral-400">{currentTime}</div>
         </div>
-        <div className="flex flex-col items-end gap-2">
-            <a href={SOCIAL_LINKS.email} className="group flex items-center gap-2 text-xs font-mono uppercase tracking-widest border border-white/20 px-4 py-2 hover:bg-white hover:text-black transition-colors bg-black/50 backdrop-blur-sm">
-                <span className="w-2 h-2 bg-red-600 rounded-full animate-pulse"/>Contact
-            </a>
-            {isApplicationPage && <span className="text-xs font-mono text-neutral-300 tracking-widest bg-white/10 px-2 py-1 backdrop-blur-md animate-pulse">{greeting}</span>}
+        <div className="flex flex-col items-end gap-3">
+            <div className="flex items-center gap-4">
+              
+              {/* NEU: Eleganter Pill-Umschalter für die Navigation */}
+              <div className="flex bg-black/40 rounded-full p-1 backdrop-blur-md border border-white/20">
+                <button 
+                  onClick={() => setLang('de')} 
+                  className={`px-3 py-1 rounded-full text-xs font-mono transition-all duration-300 ${lang === 'de' ? 'bg-white text-black' : 'text-neutral-400 hover:text-white'}`}
+                >
+                  DE
+                </button>
+                <button 
+                  onClick={() => setLang('en')} 
+                  className={`px-3 py-1 rounded-full text-xs font-mono transition-all duration-300 ${lang === 'en' ? 'bg-white text-black' : 'text-neutral-400 hover:text-white'}`}
+                >
+                  EN
+                </button>
+              </div>
+
+              <a href={SOCIAL_LINKS.email} className="group flex items-center gap-2 text-xs font-mono uppercase tracking-widest border border-white/20 px-4 py-2 hover:bg-white hover:text-black transition-colors bg-black/50 backdrop-blur-sm">
+                  <span className="w-2 h-2 bg-red-600 rounded-full animate-pulse"/>Contact
+              </a>
+            </div>
+            {isApplicationPage && <span className="text-xs font-mono text-neutral-300 tracking-widest bg-white/10 px-2 py-1 backdrop-blur-md animate-pulse">{t.applicationTag}</span>}
         </div>
       </nav>
 
@@ -528,7 +600,7 @@ function PortfolioContent() {
           <div className="relative z-10 w-full flex justify-between items-end border-b border-white/20 pb-6">
             <div className="hidden md:block"><h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter">Lennart Koitka</h2></div>
             <div className="animate-bounce absolute left-1/2 -translate-x-1/2 bottom-6"><ArrowDown className="w-6 h-6 text-white opacity-50" /></div>
-            <div className="text-right w-full md:w-auto"><div className="text-xs font-mono uppercase tracking-widest text-neutral-400 mb-2">Role</div><div className="text-xl md:text-3xl font-bold uppercase tracking-tight">DOP & Editor</div></div>
+            <div className="text-right w-full md:w-auto"><div className="text-xs font-mono uppercase tracking-widest text-neutral-400 mb-2">{t.roleLabel}</div><div className="text-xl md:text-3xl font-bold uppercase tracking-tight">{t.roleName}</div></div>
           </div>
         </section>
 
@@ -536,7 +608,7 @@ function PortfolioContent() {
             <>
                 {/* Intro Zeilen */}
                 {(currentCompanyData.greeting || currentCompanyData.subGreeting) && (
-                    <section className="h-[100dvh] w-full flex flex-col items-center justify-center px-4 md:px-12 bg-neutral-900 border-b border-white/10 snap-section">
+                    <section className="min-h-[100dvh] lg:h-[100dvh] py-24 lg:py-0 w-full flex flex-col items-center justify-center px-4 md:px-12 bg-neutral-900 border-b border-white/10 snap-section">
                         <Reveal>
                             {currentCompanyData.greeting && <h2 className="text-4xl md:text-6xl lg:text-8xl font-black tracking-tighter text-white mb-8 text-center uppercase">{currentCompanyData.greeting}</h2>}
                             {currentCompanyData.subGreeting && <h3 className="text-2xl md:text-4xl lg:text-5xl font-light text-neutral-300 text-center max-w-5xl mx-auto whitespace-pre-line leading-relaxed">{currentCompanyData.subGreeting}</h3>}
@@ -548,15 +620,15 @@ function PortfolioContent() {
                 {currentCompanyData.blocks && currentCompanyData.blocks.map((block, index) => {
                     const isEven = index % 2 === 0;
                     return (
-                        <section key={`block-${index}`} className="h-[100dvh] w-full relative flex items-center justify-center px-4 md:px-12 lg:px-24 bg-neutral-900 border-b border-white/10 snap-section">
-                            <div className="w-full h-full max-w-[1800px] flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24 py-24">
+                        <section key={`block-${index}`} className="min-h-[100dvh] lg:h-[100dvh] py-12 lg:py-0 w-full relative flex items-center justify-center px-4 md:px-12 lg:px-24 bg-neutral-900 border-b border-white/10 snap-section">
+                            <div className="w-full h-full max-w-[1800px] flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24 py-12 lg:py-24">
                                 <div className={`w-full lg:w-3/5 flex flex-col justify-center h-full order-2 ${isEven ? 'lg:order-1' : 'lg:order-2'}`}>
                                     <Reveal><p className="text-xl md:text-3xl lg:text-4xl text-neutral-300 font-light leading-relaxed whitespace-pre-line">{block.text}</p></Reveal>
                                 </div>
                                 <div className={`w-full lg:w-[35%] h-[40vh] lg:h-[70vh] order-1 ${isEven ? 'lg:order-2' : 'lg:order-1'} group`}>
                                     <Reveal delay={100} className="w-full h-full">
                                         <div className="relative w-full h-full bg-neutral-800 rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
-                                            {block.imageUrl ? <img src={block.imageUrl} alt="Bewerbungsbild" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700 grayscale hover:grayscale-0" /> : <div className="w-full h-full flex items-center justify-center text-neutral-600 text-sm font-mono">[ BILD EINFÜGEN ]</div>}
+                                            {block.imageUrl ? <img src={block.imageUrl} alt="Bewerbungsbild" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700 grayscale hover:grayscale-0" /> : <div className="w-full h-full flex items-center justify-center text-neutral-600 text-sm font-mono">{t.insertImage}</div>}
                                             <div className="absolute bottom-6 left-6 text-sm font-mono text-neutral-500 bg-black/60 px-4 py-2 rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500">Lennart Koitka</div>
                                         </div>
                                     </Reveal>
@@ -592,9 +664,9 @@ function PortfolioContent() {
                     </section>
                 )}
 
-                {/* Letzter Slide vor dem Portfolio (Nur Text, Dicke Schrift) */}
+                {/* Letzter Slide vor dem Portfolio */}
                 {currentCompanyData.portfolioTransitionText && (
-                    <section className="h-[100dvh] w-full flex flex-col items-center justify-center px-4 md:px-12 bg-black border-b border-white/10 snap-section">
+                    <section className="min-h-[100dvh] lg:h-[100dvh] py-24 lg:py-0 w-full flex flex-col items-center justify-center px-4 md:px-12 bg-black border-b border-white/10 snap-section">
                         <Reveal>
                             <h2 className="text-3xl md:text-5xl lg:text-7xl font-black tracking-tighter text-white text-center uppercase max-w-5xl mx-auto leading-[1.1]">
                                 {currentCompanyData.portfolioTransitionText}
@@ -608,9 +680,13 @@ function PortfolioContent() {
         {/* 3. Portfolio Liste */}
         <section id="portfolio-section" className="bg-black z-10 relative pt-12">
           <div className="flex flex-col">
-            {PROJECTS_DATA.map((project, index) => (
-              <ProjectItem key={index} title={project.title} category={project.category} role={project.role} year={project.year} videoUrl={project.videoUrl} isOpen={openProjects.includes(index)} onClick={() => toggleProject(index)} forceMute={lastOpenedIndex !== null && lastOpenedIndex !== index} />
-            ))}
+            {PROJECTS_DATA.map((project, index) => {
+              // Wähle die Rolle basierend auf der aktuellen Sprache
+              const roleText = lang === 'en' ? project.role_en : project.role_de;
+              return (
+                <ProjectItem key={index} title={project.title} category={project.category} role={roleText} year={project.year} videoUrl={project.videoUrl} isOpen={openProjects.includes(index)} onClick={() => toggleProject(index)} forceMute={lastOpenedIndex !== null && lastOpenedIndex !== index} />
+              )
+            })}
           </div>
         </section>
 
@@ -619,13 +695,13 @@ function PortfolioContent() {
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
               <Reveal>
-                <h2 className="text-sm font-mono uppercase tracking-widest text-neutral-500 mb-12">About</h2>
+                <h2 className="text-sm font-mono uppercase tracking-widest text-neutral-500 mb-12">{t.aboutTitle}</h2>
                 <div className="space-y-6 md:space-y-8">
-                  <p className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.1]">Kameramann & Cutter <br/><span className="text-neutral-500">aus Köln.</span></p>
+                  <p className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.1]">{t.aboutHeadline}</p>
                   <div className="h-px w-24 bg-white/20 my-8"></div>
                   <div className="text-lg md:text-xl text-neutral-400 leading-relaxed space-y-6 font-light">
-                    <p>Nach meiner Ausbildung als Mediengestalter Bild und Ton bei <strong>Picture Puzzle Medien</strong> (2021–2023) arbeite ich heute festangestellt an der Kamera und in der Postproduktion für diverse TV-Formate.</p>
-                    <p>Mein Fokus liegt auf der technischen Umsetzung und visuellen Gestaltung von Doku-Soaps, Magazinbeiträgen und Werbung für Sender wie <strong>RTL2, Discovery+, Kabel Eins, ARD, VOX und RTL+</strong>. Dabei übernehme ich Verantwortung von der technischen Planung über den Dreh bis zum finalen Schnitt.</p>
+                    <p>{t.aboutText1}</p>
+                    <p>{t.aboutText2}</p>
                   </div>
                 </div>
               </Reveal>
@@ -645,8 +721,8 @@ function PortfolioContent() {
               <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="text-xs font-mono uppercase tracking-widest hover:text-white text-neutral-500 transition-colors">Instagram</a>
               <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="text-xs font-mono uppercase tracking-widest hover:text-white text-neutral-500 transition-colors">LinkedIn</a>
               <a href={SOCIAL_LINKS.email} className="text-xs font-mono uppercase tracking-widest hover:text-white text-neutral-500 transition-colors">Email</a>
-              <Link to="/impressum" className="text-xs font-mono uppercase tracking-widest hover:text-white text-neutral-500 transition-colors">Impressum</Link>
-              <Link to="/datenschutz" className="text-xs font-mono uppercase tracking-widest hover:text-white text-neutral-500 transition-colors">Datenschutz</Link>
+              <Link to="/impressum" className="text-xs font-mono uppercase tracking-widest hover:text-white text-neutral-500 transition-colors">{t.imprint}</Link>
+              <Link to="/datenschutz" className="text-xs font-mono uppercase tracking-widest hover:text-white text-neutral-500 transition-colors">{t.privacy}</Link>
           </div>
         </footer>
       </div>
@@ -654,14 +730,17 @@ function PortfolioContent() {
   );
 }
 
+// --- APP WRAPPER ---
 export default function App() {
+  const [lang, setLang] = useState('de'); // Globaler State für die Sprache
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<PortfolioContent />} />
-        <Route path="/:company" element={<PortfolioContent />} />
-        <Route path="/impressum" element={<Impressum />} />
-        <Route path="/datenschutz" element={<Datenschutz />} />
+        <Route path="/" element={<PortfolioContent lang={lang} setLang={setLang} />} />
+        <Route path="/:company" element={<PortfolioContent lang={lang} setLang={setLang} />} />
+        <Route path="/impressum" element={<Impressum lang={lang} />} />
+        <Route path="/datenschutz" element={<Datenschutz lang={lang} />} />
       </Routes>
     </BrowserRouter>
   );
