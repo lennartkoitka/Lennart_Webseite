@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowDownRight, ArrowDown, Plus, Minus, Volume2, VolumeX, Building2 } from 'lucide-react';
+import { ArrowDownRight, ArrowDown, Plus, Minus, Volume2, VolumeX, Building2, ExternalLink } from 'lucide-react';
 import { BrowserRouter, Routes, Route, useParams, Link } from 'react-router-dom';
 
 // --- 1. DEINE SOCIAL MEDIA LINKS ---
@@ -23,7 +23,8 @@ const TRANSLATIONS = {
     imprint: "Impressum",
     privacy: "Datenschutz",
     backHome: "← Zurück zur Startseite",
-    insertImage: "[ BILD EINFÜGEN ]"
+    insertImage: "[ BILD EINFÜGEN ]",
+    viewProject: "Projekt ansehen ↗"
   },
   en: {
     clickToEnter: "Select language to enter",
@@ -37,20 +38,21 @@ const TRANSLATIONS = {
     imprint: "Imprint",
     privacy: "Privacy Policy",
     backHome: "← Back to Home",
-    insertImage: "[ INSERT IMAGE ]"
+    insertImage: "[ INSERT IMAGE ]",
+    viewProject: "View Project ↗"
   }
 };
 
 // --- 3. BEWERBUNGS-KONFIGURATION ---
 const COMPANY_CONFIG = {
   default: {
-    de: { greeting: null, subGreeting: null, logoUrl: null, blocks: [], expandablesTitle: null, expandables: [], portfolioTransitionText: null },
-    en: { greeting: null, subGreeting: null, logoUrl: null, blocks: [], expandablesTitle: null, expandables: [], portfolioTransitionText: null }
+    de: { greeting: null, subGreeting: null, logoUrl: null, blocks: [], expandablesTitle: null, expandables: [], portfolioTransitionText: null, extraProjects: [] },
+    en: { greeting: null, subGreeting: null, logoUrl: null, blocks: [], expandablesTitle: null, expandables: [], portfolioTransitionText: null, extraProjects: [] }
   },
-  klangmalereitv: {
+  alxktv: {
     // ---- DEUTSCHE VERSION ----
     de: {
-      greeting: "Hi liebes Klangmalerei Team!",
+      greeting: "Hi liebes ALxKTV Team!",
       subGreeting: "Ich bin Lennart, Kameramann & Cutter aus Köln\nund ich glaube, wir passen perfekt zusammen.",
       logoUrl: "https://lennart-portfolio.b-cdn.net/Klangmalerei.tv%20Logo.png",  
       portfolioTransitionText: "Im Folgenden findet ihr einige Auszüge meiner bisherigen Projekte",
@@ -80,13 +82,25 @@ const COMPANY_CONFIG = {
       expandables: [
         { title: "Frühester Eintrittstermin", content: "Ich stehe euch ab dem 01. Juli 2026 zur Verfügung." },
         { title: "Gehaltsvorstellung", content: "Meine Gehaltsvorstellung liegt bei 54.000 Euro brutto im Jahr. Ich bin jedoch offen für ein persönliches Gespräch, um die genauen Rahmenbedingungen zu besprechen." },
-        { title: "Reisebereitschaft", content: "Durch regelmäßige Fernreisen (z. B. Nepal, Mongolei, China, Thailand, Australien) bin ich längere Auslandsaufenthalte gewohnt und jederzeit bereit, Projekte weltweit über mehrere Wochen zu begleiten." }
+        { title: "Reisebereitschaft", content: "Durch regelmäßige Fernreisen (z. B. Nepal, Mongolei, China, Thailand, Australien)\n Ich bin längere Auslandsaufenthalte gewohnt und jederzeit bereit, Projekte weltweit über mehrere Wochen zu begleiten." }
+      ],
+      // NEU: Exklusive Projekte, die nur bei ALxKTV auftauchen
+      extraProjects: [
+        {
+          title: "Peter & Alex - Über den Tellerrand",
+          category: "Special",
+          role_de: "Kamera & Schnitt",
+          role_en: "Camera & Edit",
+          year: "unreleased",
+          videoUrl: "https://lennart-portfolio.b-cdn.net/Trailer_Peter%26Alex__Finalv3.mp4",
+          position: 4
+        }
       ]
     },
     
     // ---- ENGLISCHE VERSION ----
     en: {
-      greeting: "Hi Klangmalerei Team!",
+      greeting: "Hi ALxKTV Team!",
       subGreeting: "I am Lennart,\n Cinematographer & Editor from Cologne\nand I believe we are a perfect match.",
       logoUrl: "https://lennart-portfolio.b-cdn.net/Klangmalerei.tv%20Logo.png",  
       portfolioTransitionText: "Below you will find some excerpts of my previous projects",
@@ -117,6 +131,17 @@ const COMPANY_CONFIG = {
         { title: "Earliest starting date", content: "I will be available from July 1st, 2026." },
         { title: "Salary expectation", content: "My salary expectation is 54.000€ gross per year. However, I am open to a personal meeting to discuss the exact terms and conditions." },
         { title: "Willingness to travel", content: "Through regular long-distance travel (e.g. Nepal, Mongolia, China, Thailand, Australia)\n I am accustomed to longer stays abroad and am always ready to accompany projects worldwide for several weeks." }
+      ],
+      extraProjects: [
+        {
+          title: "Peter & Alex - Über den Tellerrand",
+          category: "Special",
+          role_de: "Kamera & Schnitt",
+          role_en: "Camera & Edit",
+          year: "unreleased",
+          videoUrl: "https://lennart-portfolio.b-cdn.net/Trailer_Peter%26Alex__Finalv3.mp4",
+          position: 4
+        }
       ]
     }
   }
@@ -318,11 +343,14 @@ const ProjectItem = ({ title, category, role, year, videoUrl, isOpen, onClick, f
 
       <div className={`overflow-hidden transition-all duration-700 ease-in-out ${isOpen ? 'max-h-[150vh] opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="px-4 md:px-12 pb-12">
-            <div className="mx-auto w-full md:w-auto max-w-full aspect-video md:h-[calc(100vh-14rem)] bg-neutral-900 rounded-lg overflow-hidden relative shadow-2xl group/video">
-                {isOpen && (
-                    <video className="w-full h-full object-cover" src={videoUrl} autoPlay muted={isMuted} loop playsInline />
+            <div className="mx-auto w-full md:w-auto max-w-full aspect-video md:h-[calc(100vh-14rem)] bg-neutral-900 rounded-lg overflow-hidden relative shadow-2xl group/video flex items-center justify-center">
+                
+                {/* Video wird ganz normal abgespielt */}
+                {isOpen && videoUrl && (
+                    <video className="w-full h-full object-cover absolute inset-0" src={videoUrl} autoPlay muted={isMuted} loop playsInline />
                 )}
-                {isOpen && (
+
+                {isOpen && videoUrl && (
                   <button onClick={toggleMute} className="absolute bottom-6 right-6 z-20 bg-black/40 hover:bg-white text-white hover:text-black p-4 rounded-full backdrop-blur-md transition-all duration-300 border border-white/10">
                     {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
                   </button>
@@ -415,6 +443,16 @@ function PortfolioContent({ lang, setLang }) {
   const isApplicationPage = !!company && !!COMPANY_CONFIG[companyKey]; 
   
   const t = TRANSLATIONS[lang];
+
+  // Füge eventuelle Exklusiv-Projekte an der gewünschten Position ein
+  let allProjects = [...PROJECTS_DATA];
+  if (isApplicationPage && currentCompanyData.extraProjects) {
+    currentCompanyData.extraProjects.forEach(extra => {
+      // Wenn 'position' definiert ist, füge es dort ein, sonst hänge es ans Ende an
+      const index = extra.position !== undefined ? extra.position : allProjects.length;
+      allProjects.splice(index, 0, extra);
+    });
+  }
 
   useEffect(() => {
     const updateTime = () => {
@@ -531,7 +569,7 @@ function PortfolioContent({ lang, setLang }) {
                 </h1>
             )}
             
-            {/* NEU: Auffällige Sprachauswahl zum Eintreten */}
+            {/* Sprachauswahl zum Eintreten */}
             {!hasStarted && (
               <div className="flex flex-col items-center gap-6 mt-8 animate-pulse">
                 <span className="text-xs font-mono uppercase tracking-widest text-neutral-500">
@@ -564,7 +602,6 @@ function PortfolioContent({ lang, setLang }) {
         <div className="flex flex-col items-end gap-3">
             <div className="flex items-center gap-4">
               
-              {/* NEU: Eleganter Pill-Umschalter für die Navigation */}
               <div className="flex bg-black/40 rounded-full p-1 backdrop-blur-md border border-white/20">
                 <button 
                   onClick={() => setLang('de')} 
@@ -680,11 +717,21 @@ function PortfolioContent({ lang, setLang }) {
         {/* 3. Portfolio Liste */}
         <section id="portfolio-section" className="bg-black z-10 relative pt-12">
           <div className="flex flex-col">
-            {PROJECTS_DATA.map((project, index) => {
+            {allProjects.map((project, index) => {
               // Wähle die Rolle basierend auf der aktuellen Sprache
               const roleText = lang === 'en' ? project.role_en : project.role_de;
               return (
-                <ProjectItem key={index} title={project.title} category={project.category} role={roleText} year={project.year} videoUrl={project.videoUrl} isOpen={openProjects.includes(index)} onClick={() => toggleProject(index)} forceMute={lastOpenedIndex !== null && lastOpenedIndex !== index} />
+                <ProjectItem 
+                  key={index} 
+                  title={project.title} 
+                  category={project.category} 
+                  role={roleText} 
+                  year={project.year} 
+                  videoUrl={project.videoUrl} 
+                  isOpen={openProjects.includes(index)} 
+                  onClick={() => toggleProject(index)} 
+                  forceMute={lastOpenedIndex !== null && lastOpenedIndex !== index} 
+                />
               )
             })}
           </div>
